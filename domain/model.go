@@ -4,6 +4,7 @@ import "time"
 
 type Tweet struct {
 	ID        string
+	User      *User
 	Text      string
 	CreatedAt time.Time
 }
