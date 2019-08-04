@@ -1,7 +1,6 @@
 package app
 
 import (
-	"github.com/tomocy/deverr"
 	"github.com/tomocy/mint/domain"
 )
 
@@ -16,5 +15,5 @@ type TweetUsecase struct {
 }
 
 func (u *TweetUsecase) Fetch() ([]*domain.Tweet, error) {
-	return nil, deverr.NotImplemented
+	return u.repo.FetchHomeTweets()
 }
