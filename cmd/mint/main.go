@@ -20,3 +20,7 @@ func (a *app) setBasic() {
 func (a *app) setCommands() {
 	a.driver.Commands = []cli.Command{}
 }
+
+func (a *app) run(args []string) error {
+	return a.driver.Run(args)
+}
