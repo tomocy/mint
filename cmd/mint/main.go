@@ -9,6 +9,7 @@ type app struct {
 }
 
 func (a *app) setUp() {
+	a.driver = cli.NewApp()
 	a.setBasic()
 	a.setCommands()
 }
