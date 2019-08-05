@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"log"
 	"net/http"
 	"net/url"
 	"os"
@@ -41,7 +42,7 @@ func (t *Twitter) FetchHomeTweets() ([]*domain.Tweet, error) {
 
 	var tweets twitter.Tweets
 	if err := t.makeRequest(&tweets, cred, http.MethodGet, "https://api.twitter.com/1.1/statuses/home_timeline.json", nil); err != nil {
-		t.resetConfig()
+		t.deleteConfig()
 		return nil, fmt.Errorf("failed to fetch home tweets: %s", err)
 	}
 
@@ -84,8 +85,8 @@ func (t *Twitter) loadConfig() (*config, error) {
 	return loaded, nil
 }
 
-func (t *Twitter) resetConfig() error {
-	return t.saveConfig(&config{&oauth.Credentials{}})
+func (t *Twitter) deleteConfig() {
+	os.Remove(configFilename())
 }
 
 func (t *Twitter) saveConfig(config *config) error {
@@ -130,6 +131,8 @@ func (t *Twitter) makeRequest(dest interface{}, cred *oauth.Credentials, method,
 		return err
 	}
 	defer resp.Body.Close()
+
+	log.Println(resp.Status)
 
 	return json.NewDecoder(resp.Body).Decode(dest)
 }
