@@ -1,8 +1,19 @@
 package main
 
-import "github.com/urfave/cli"
+import (
+	"fmt"
+	"os"
 
-func main() {}
+	"github.com/urfave/cli"
+)
+
+func main() {
+	a := newApp()
+	if err := a.run(os.Args); err != nil {
+		fmt.Fprintf(os.Stderr, "failed to run app: %s\n", err)
+		os.Exit(1)
+	}
+}
 
 func newApp() *app {
 	a := new(app)
