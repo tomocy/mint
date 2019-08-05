@@ -44,10 +44,21 @@ func (t *Twitter) FetchHomeTweets() ([]*domain.Tweet, error) {
 		return nil, fmt.Errorf("failed to fetch home tweets: %s", err)
 	}
 
+	if err := t.saveConfig(&config{
+		AccessCredentials: cred,
+	}); err != nil {
+		return nil, fmt.Errorf("failed to fetch home tweets: %s", err)
+	}
+
 	return tweets.Adapt(), nil
 }
 
 func (t *Twitter) treiveAuthorization() (*oauth.Credentials, error) {
+	config, err := t.loadConfig()
+	if err == nil {
+		return config.AccessCredentials, nil
+	}
+
 	tempCred, err := t.oauthClient.RequestTemporaryCredentials(http.DefaultClient, "", nil)
 	if err != nil {
 		return nil, err
@@ -57,31 +68,30 @@ func (t *Twitter) treiveAuthorization() (*oauth.Credentials, error) {
 }
 
 func (t *Twitter) loadConfig() (*config, error) {
+	srcName := configFilename()
+	src, err := os.Open(srcName)
+	if err != nil {
+		return nil, err
+	}
+	defer src.Close()
+
 	var loaded *config
-	if err := t.handleConfig(loaded, func(f *os.File, config *config) error {
-		return json.NewDecoder(f).Decode(config)
-	}); err != nil {
+	if err := json.NewDecoder(src).Decode(&loaded); err != nil {
 		return nil, err
 	}
 
 	return loaded, nil
 }
 
-func (t *Twitter) saveConfig(c *config) error {
-	return t.handleConfig(c, func(f *os.File, config *config) error {
-		return json.NewEncoder(f).Encode(config)
-	})
-}
-
-func (t *Twitter) handleConfig(config *config, h func(*os.File, *config) error) error {
-	name := configFilename()
-	f, err := os.Open(name)
+func (t *Twitter) saveConfig(config *config) error {
+	destName := configFilename()
+	dest, err := os.OpenFile(destName, os.O_WRONLY, 0700)
 	if err != nil {
 		return err
 	}
-	defer f.Close()
+	defer dest.Close()
 
-	return h(f, config)
+	return json.NewEncoder(dest).Encode(config)
 }
 
 type config struct {
