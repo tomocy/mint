@@ -14,6 +14,6 @@ type TweetUsecase struct {
 	repo domain.TweetRepository
 }
 
-func (u *TweetUsecase) Fetch() ([]*domain.Tweet, error) {
+func (u *TweetUsecase) FetchHomeTweets() ([]*domain.Tweet, error) {
 	return u.repo.FetchHomeTweets()
 }

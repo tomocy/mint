@@ -13,7 +13,7 @@ type CLI struct{}
 func (c *CLI) FetchHomeTweets() error {
 	r := infra.NewTwitter()
 	u := app.NewTweetUsecase(r)
-	tweets, err := u.Fetch()
+	tweets, err := u.FetchHomeTweets()
 	if err != nil {
 		return err
 	}

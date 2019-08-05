@@ -17,11 +17,11 @@ func TestFetch(t *testing.T) {
 	}
 }
 
-func testTweetUsecaseFetch(t *testing.T) {
+func testTweetUsecaseFetchHomeTweets(t *testing.T) {
 	r := new(mock)
 	u := NewTweetUsecase(r)
 	expecteds := []*domain.Tweet{}
-	actuals, err := u.Fetch()
+	actuals, err := u.FetchHomeTweets()
 	if err != nil {
 		t.Errorf("unexpected error returned by Fetch: got %s, expect nil\n", err)
 	}
