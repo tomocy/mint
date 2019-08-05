@@ -6,6 +6,8 @@ import (
 	"github.com/tomocy/mint/domain"
 )
 
+type Tweets []*Tweet
+
 type Tweet struct {
 	ID        string    `json:"id_str"`
 	User      *User     `json:"user"`
