@@ -1,8 +1,6 @@
 package twitter
 
 import (
-	"time"
-
 	"github.com/tomocy/mint/domain"
 )
 
@@ -18,18 +16,16 @@ func (ts Tweets) Adapt() []*domain.Tweet {
 }
 
 type Tweet struct {
-	ID        string    `json:"id_str"`
-	User      *User     `json:"user"`
-	Text      string    `json:"text"`
-	CreatedAt time.Time `json:"create_at"`
+	ID   string `json:"id_str"`
+	User *User  `json:"user"`
+	Text string `json:"text"`
 }
 
 func (t *Tweet) Adapt() *domain.Tweet {
 	return &domain.Tweet{
-		ID:        t.ID,
-		User:      t.User.Adapt(),
-		Text:      t.Text,
-		CreatedAt: t.CreatedAt,
+		ID:   t.ID,
+		User: t.User.Adapt(),
+		Text: t.Text,
 	}
 }
 
