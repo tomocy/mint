@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"net/url"
 	"os"
+	"path/filepath"
 
 	"github.com/garyburd/go-oauth/oauth"
 	"github.com/tomocy/mint/domain"
@@ -53,6 +54,17 @@ func (t *Twitter) treiveAuthorization() (*oauth.Credentials, error) {
 	}
 
 	return t.requestClientAuthorization(tempCred)
+}
+
+func (t *Twitter) saveConfig(config *config) error {
+	destName := filepath.Join(os.Getenv("HOME"), ".mint/config.json")
+	dest, err := os.Open(destName)
+	if err != nil {
+		return err
+	}
+	defer dest.Close()
+
+	return json.NewEncoder(dest).Encode(config)
 }
 
 type config struct {
