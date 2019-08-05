@@ -13,6 +13,15 @@ type Tweet struct {
 	CreatedAt time.Time `json:"create_at"`
 }
 
+func (t *Tweet) Adapt() *domain.Tweet {
+	return &domain.Tweet{
+		ID:        t.ID,
+		User:      t.User.Adapt(),
+		Text:      t.Text,
+		CreatedAt: t.CreatedAt,
+	}
+}
+
 type User struct {
 	ID         string `json:"id_str"`
 	Name       string `json:"name"`
