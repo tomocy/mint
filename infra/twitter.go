@@ -56,6 +56,22 @@ func (t *Twitter) treiveAuthorization() (*oauth.Credentials, error) {
 	return t.requestClientAuthorization(tempCred)
 }
 
+func (t *Twitter) loadConfig() (*config, error) {
+	srcName := filepath.Join(os.Getenv("HOME"), ".mint/config.json")
+	src, err := os.Open(srcName)
+	if err != nil {
+		return nil, err
+	}
+	defer src.Close()
+
+	var loaded *config
+	if err := json.NewDecoder(src).Decode(&loaded); err != nil {
+		return nil, err
+	}
+
+	return loaded, nil
+}
+
 func (t *Twitter) saveConfig(config *config) error {
 	destName := filepath.Join(os.Getenv("HOME"), ".mint/config.json")
 	dest, err := os.Open(destName)
