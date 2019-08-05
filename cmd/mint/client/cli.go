@@ -24,7 +24,11 @@ func (c *CLI) FetchHomeTweets() error {
 }
 
 func (c *CLI) showTweets(tweets []*domain.Tweet) {
-	for _, t := range tweets {
-		fmt.Println(t)
+	for i, t := range tweets {
+		if i == 0 {
+			fmt.Println("----------")
+		}
+		fmt.Printf("%s@%s %s\n%s\n", t.User.Name, t.User.ScreenName, t.CreatedAt, t.Text)
+		fmt.Println("----------")
 	}
 }
