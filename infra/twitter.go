@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"log"
 	"net/http"
 	"net/url"
 	"os"
@@ -132,7 +131,9 @@ func (t *Twitter) makeRequest(dest interface{}, cred *oauth.Credentials, method,
 	}
 	defer resp.Body.Close()
 
-	log.Println(resp.Status)
+	if http.StatusBadRequest <= resp.StatusCode {
+		return errors.New(resp.Status)
+	}
 
 	return json.NewDecoder(resp.Body).Decode(dest)
 }
