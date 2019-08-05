@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/tomocy/mint/cmd/mint/client"
 	"github.com/urfave/cli"
 )
 
@@ -37,7 +38,18 @@ func (a *app) setBasic() {
 }
 
 func (a *app) setCommands() {
-	a.driver.Commands = []cli.Command{}
+	a.driver.Commands = []cli.Command{
+		cli.Command{
+			Name:   "cli",
+			Action: a.runCLI,
+		},
+	}
+}
+
+func (a *app) runCLI(ctx *cli.Context) error {
+	client := new(client.CLI)
+
+	return client.FetchHomeTweets()
 }
 
 func (a *app) run(args []string) error {
