@@ -15,6 +15,7 @@ import (
 )
 
 func NewTwitter() *Twitter {
+	createWorkspace()
 	return &Twitter{
 		oauthClient: &oauth.Client{
 			TemporaryCredentialRequestURI: "https://api.twitter.com/oauth/request_token",
