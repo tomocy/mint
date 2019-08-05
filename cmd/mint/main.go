@@ -4,6 +4,13 @@ import "github.com/urfave/cli"
 
 func main() {}
 
+func newApp() *app {
+	a := new(app)
+	a.setUp()
+
+	return a
+}
+
 type app struct {
 	driver *cli.App
 }
