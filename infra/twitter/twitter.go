@@ -2,6 +2,8 @@ package twitter
 
 import (
 	"time"
+
+	"github.com/tomocy/mint/domain"
 )
 
 type Tweet struct {
@@ -15,4 +17,12 @@ type User struct {
 	ID         string `json:"id_str"`
 	Name       string `json:"name"`
 	ScreenName string `json:"screen_name"`
+}
+
+func (u *User) Adapt() *domain.User {
+	return &domain.User{
+		ID:         u.ID,
+		Name:       u.Name,
+		ScreenName: u.ScreenName,
+	}
 }
