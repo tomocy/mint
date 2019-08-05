@@ -55,6 +55,10 @@ func (t *Twitter) treiveAuthorization() (*oauth.Credentials, error) {
 	return t.requestClientAuthorization(tempCred)
 }
 
+type config struct {
+	AccessCredentials *oauth.Credentials
+}
+
 func (t *Twitter) requestClientAuthorization(tempCred *oauth.Credentials) (*oauth.Credentials, error) {
 	url := t.oauthClient.AuthorizationURL(tempCred, nil)
 	fmt.Println("open this url: ", url)
