@@ -41,6 +41,7 @@ func (t *Twitter) FetchHomeTweets() ([]*domain.Tweet, error) {
 
 	var tweets twitter.Tweets
 	if err := t.makeRequest(&tweets, cred, http.MethodGet, "https://api.twitter.com/1.1/statuses/home_timeline.json", nil); err != nil {
+		t.resetConfig()
 		return nil, fmt.Errorf("failed to fetch home tweets: %s", err)
 	}
 
@@ -81,6 +82,10 @@ func (t *Twitter) loadConfig() (*config, error) {
 	}
 
 	return loaded, nil
+}
+
+func (t *Twitter) resetConfig() error {
+	return t.saveConfig(&config{&oauth.Credentials{}})
 }
 
 func (t *Twitter) saveConfig(config *config) error {
