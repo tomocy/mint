@@ -28,7 +28,7 @@ func (c *CLI) showTweets(tweets []*domain.Tweet) {
 		if i == 0 {
 			fmt.Println("----------")
 		}
-		fmt.Printf("%s@%s %s\n%s\n", t.User.Name, t.User.ScreenName, t.CreatedAt, t.Text)
+		fmt.Printf("%s@%s %s\n%s\n", t.User.Name, t.User.ScreenName, t.CreatedAt.Format("2006/01/02 15:16"), t.Text)
 		fmt.Println("----------")
 	}
 }
