@@ -34,28 +34,12 @@ type Twitter struct {
 }
 
 func (t *Twitter) FetchHomeTweets() ([]*domain.Tweet, error) {
-	cred, err := t.treiveAuthorization()
+	ts, err := t.fetchTweets("https://api.twitter.com/1.1/statuses/home_timeline.json", nil)
 	if err != nil {
 		return nil, fmt.Errorf("failed to fetch home tweets: %s", err)
 	}
 
-	var tweets twitter.Tweets
-	if err := t.trieve(&oauthRequest{
-		cred:   cred,
-		method: http.MethodGet,
-		url:    "https://api.twitter.com/1.1/statuses/home_timeline.json",
-	}, &tweets); err != nil {
-		t.deleteConfig()
-		return nil, fmt.Errorf("failed to fetch home tweets: %s", err)
-	}
-
-	if err := t.saveConfig(&config{
-		AccessCredentials: cred,
-	}); err != nil {
-		return nil, fmt.Errorf("failed to fetch home tweets: %s", err)
-	}
-
-	return tweets.Adapt(), nil
+	return ts, nil
 }
 
 func (t *Twitter) fetchTweets(url string, params url.Values) ([]*domain.Tweet, error) {
