@@ -17,7 +17,7 @@ func (ts asciiTweets) String() string {
 		if i == 0 {
 			b.WriteString("----------\n")
 		}
-		b.WriteString(fmt.Sprintf("%s@%s %s\n%s\n", t.User.Name, t.User.ScreenName, legibleTimeDiff(t.CreatedAt, "2006/01/02 15:04"), t.Text))
+		b.WriteString(fmt.Sprintf("%s @%s %s\n%s\n", t.User.Name, t.User.ScreenName, legibleTimeDiff(t.CreatedAt, "2006/01/02 15:04"), t.Text))
 		b.WriteString("----------\n")
 	}
 
