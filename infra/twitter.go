@@ -68,7 +68,7 @@ func (t *Twitter) PoleHomeTweets(ctx context.Context) (<-chan []*domain.Tweet, <
 			select {
 			case <-ctx.Done():
 				break
-			case <-time.After(5 * time.Minute):
+			case <-time.After(4 * time.Minute):
 				lastID = sendTweets(lastID, tsCh, errCh)
 			}
 		}
