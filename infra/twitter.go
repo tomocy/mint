@@ -127,6 +127,16 @@ func (t *Twitter) requestClientAuthorization(tempCred *oauth.Credentials) (*oaut
 	return token, err
 }
 
+func (t *Twitter) treive(req *oauthRequest, dest interface{}) error {
+	resp, err := t.makeRequest(req)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+
+	return readJSON(resp.Body, dest)
+}
+
 func (t *Twitter) makeRequest(req *oauthRequest) (*http.Response, error) {
 	params := req.params
 	if params == nil {
