@@ -58,6 +58,32 @@ func (t *Twitter) FetchHomeTweets() ([]*domain.Tweet, error) {
 	return tweets.Adapt(), nil
 }
 
+func (t *Twitter) fetchTweets(url string, params url.Values) ([]*domain.Tweet, error) {
+	cred, err := t.treiveAuthorization()
+	if err != nil {
+		return nil, err
+	}
+
+	var tweets twitter.Tweets
+	if err := t.trieve(&oauthRequest{
+		cred:   cred,
+		method: http.MethodGet,
+		url:    url,
+		params: params,
+	}, &tweets); err != nil {
+		t.deleteConfig()
+		return nil, err
+	}
+
+	if err := t.saveConfig(&config{
+		AccessCredentials: cred,
+	}); err != nil {
+		return nil, err
+	}
+
+	return tweets.Adapt(), nil
+}
+
 func (t *Twitter) deleteConfig() {
 	os.Remove(configFilename())
 }
