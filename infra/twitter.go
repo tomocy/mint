@@ -40,7 +40,7 @@ func (t *Twitter) FetchHomeTweets() ([]*domain.Tweet, error) {
 	}
 
 	var tweets twitter.Tweets
-	if err := t.treive(&oauthRequest{
+	if err := t.trieve(&oauthRequest{
 		cred:   cred,
 		method: http.MethodGet,
 		url:    "https://api.twitter.com/1.1/statuses/home_timeline.json",
@@ -122,7 +122,7 @@ func (t *Twitter) requestClientAuthorization(tempCred *oauth.Credentials) (*oaut
 	return token, err
 }
 
-func (t *Twitter) treive(req *oauthRequest, dest interface{}) error {
+func (t *Twitter) trieve(req *oauthRequest, dest interface{}) error {
 	resp, err := t.makeRequest(req)
 	if err != nil {
 		return err
