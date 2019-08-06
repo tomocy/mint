@@ -1,6 +1,8 @@
 package infra
 
 import (
+	"encoding/json"
+	"io"
 	"os"
 	"path/filepath"
 )
@@ -29,4 +31,8 @@ func createWorkspace() error {
 
 func configFilename() string {
 	return filepath.Join(os.Getenv("HOME"), ".mint/config.json")
+}
+
+func readJSON(src io.Reader, dest interface{}) error {
+	return json.NewDecoder(src).Decode(dest)
 }
