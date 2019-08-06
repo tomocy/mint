@@ -39,9 +39,14 @@ func (t *Twitter) FetchHomeTweets() ([]*domain.Tweet, error) {
 		return nil, fmt.Errorf("failed to fetch home tweets: %s", err)
 	}
 
-	var tweets twitter.Tweets
-	if err := t.makeRequest(&tweets, cred, http.MethodGet, "https://api.twitter.com/1.1/statuses/home_timeline.json", nil); err != nil {
+	resp, err := t.makeRequest(cred, http.MethodGet, "https://api.twitter.com/1.1/statuses/home_timeline.json", nil)
+	if err != nil {
 		t.deleteConfig()
+		return nil, fmt.Errorf("failed to fetch home tweets: %s", err)
+	}
+	defer resp.Body.Close()
+	var tweets twitter.Tweets
+	if err := readJSON(resp.Body, &tweets); err != nil {
 		return nil, fmt.Errorf("failed to fetch home tweets: %s", err)
 	}
 
@@ -118,7 +123,7 @@ func (t *Twitter) requestClientAuthorization(tempCred *oauth.Credentials) (*oaut
 	return token, err
 }
 
-func (t *Twitter) makeRequest(dest interface{}, cred *oauth.Credentials, method, rawURL string, params url.Values) error {
+func (t *Twitter) makeRequest(cred *oauth.Credentials, method, rawURL string, params url.Values) (*http.Response, error) {
 	if params == nil {
 		params = make(url.Values)
 	}
@@ -127,15 +132,13 @@ func (t *Twitter) makeRequest(dest interface{}, cred *oauth.Credentials, method,
 
 	resp, err := t.doRequest(method, rawURL, params)
 	if err != nil {
-		return err
+		return nil, err
 	}
-	defer resp.Body.Close()
-
 	if http.StatusBadRequest <= resp.StatusCode {
-		return errors.New(resp.Status)
+		return nil, errors.New(resp.Status)
 	}
 
-	return json.NewDecoder(resp.Body).Decode(dest)
+	return resp, nil
 }
 
 func (t *Twitter) doRequest(method, rawURL string, params url.Values) (*http.Response, error) {
