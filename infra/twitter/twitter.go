@@ -21,14 +21,19 @@ type Tweet struct {
 	ID        string `json:"id_str"`
 	User      *User  `json:"user"`
 	Text      string `json:"text"`
+	FullText  string `json:"full_text"`
 	CreatedAt date   `json:"created_at"`
 }
 
 func (t *Tweet) Adapt() *domain.Tweet {
+	text := t.Text
+	if t.FullText != "" {
+		text = t.FullText
+	}
 	return &domain.Tweet{
 		ID:        t.ID,
 		User:      t.User.Adapt(),
-		Text:      t.Text,
+		Text:      text,
 		CreatedAt: time.Time(t.CreatedAt),
 	}
 }
