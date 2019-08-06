@@ -54,6 +54,21 @@ func (t *Twitter) FetchHomeTweets() ([]*domain.Tweet, error) {
 	return tweets.Adapt(), nil
 }
 
+func (t *Twitter) deleteConfig() {
+	os.Remove(configFilename())
+}
+
+func (t *Twitter) saveConfig(config *config) error {
+	destName := configFilename()
+	dest, err := os.OpenFile(destName, os.O_WRONLY, 0700)
+	if err != nil {
+		return err
+	}
+	defer dest.Close()
+
+	return json.NewEncoder(dest).Encode(config)
+}
+
 func (t *Twitter) treiveAuthorization() (*oauth.Credentials, error) {
 	config, err := t.loadConfig()
 	if err == nil {
@@ -82,21 +97,6 @@ func (t *Twitter) loadConfig() (*config, error) {
 	}
 
 	return loaded, nil
-}
-
-func (t *Twitter) deleteConfig() {
-	os.Remove(configFilename())
-}
-
-func (t *Twitter) saveConfig(config *config) error {
-	destName := configFilename()
-	dest, err := os.OpenFile(destName, os.O_WRONLY, 0700)
-	if err != nil {
-		return err
-	}
-	defer dest.Close()
-
-	return json.NewEncoder(dest).Encode(config)
 }
 
 type config struct {
