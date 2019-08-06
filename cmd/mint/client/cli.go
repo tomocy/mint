@@ -25,7 +25,8 @@ func (c *CLI) PoleHomeTweets() error {
 	for {
 		select {
 		case ts := <-tsCh:
-			c.showTweets(ts)
+			ordered := orderOlderTweets(ts)
+			c.showTweets(ordered)
 			fmt.Printf("updated at %s\n", time.Now().Format("2006/01/02 15:04"))
 		case err := <-errCh:
 			cancelFn()
@@ -46,7 +47,8 @@ func (c *CLI) FetchHomeTweets() error {
 		return err
 	}
 
-	c.showTweets(tweets)
+	ordered := orderOlderTweets(tweets)
+	c.showTweets(ordered)
 
 	return nil
 }
