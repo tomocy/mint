@@ -41,11 +41,11 @@ func (d date) MarshalJSON() ([]byte, error) {
 
 func (d *date) UnmarshalJSON(data []byte) error {
 	withoutQuotes := (string(data))[1 : len(data)-1]
-	parsed, err := time.Parse(time.RubyDate, withoutQuotes)
+	parsed, err := time.ParseInLocation(time.RubyDate, withoutQuotes, time.UTC)
 	if err != nil {
 		return err
 	}
-	*d = date(parsed)
+	*d = date(parsed.In(time.Local))
 
 	return nil
 }
