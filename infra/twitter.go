@@ -36,45 +36,7 @@ type Twitter struct {
 }
 
 func (t *Twitter) PoleHomeTweets(ctx context.Context) (<-chan []*domain.Tweet, <-chan error) {
-	tsCh, errCh := make(chan []*domain.Tweet), make(chan error)
-	go func() {
-		defer func() {
-			close(tsCh)
-			close(errCh)
-		}()
-
-		sendTweets := func(lastID string, tsCh chan<- []*domain.Tweet, errCh chan<- error) string {
-			var params url.Values
-			if lastID != "" {
-				params = url.Values{
-					"since_id": []string{lastID},
-				}
-			}
-			ts, err := t.fetchTweets("https://api.twitter.com/1.1/statuses/home_timeline.json", params)
-			if err != nil {
-				errCh <- err
-				return ""
-			}
-			if len(ts) <= 0 {
-				return ""
-			}
-
-			tsCh <- ts
-			return ts[0].ID
-		}
-
-		lastID := sendTweets("", tsCh, errCh)
-		for {
-			select {
-			case <-ctx.Done():
-				break
-			case <-time.After(4 * time.Minute):
-				lastID = sendTweets(lastID, tsCh, errCh)
-			}
-		}
-	}()
-
-	return tsCh, errCh
+	return t.poleTweets(ctx, "https://api.twitter.com/1.1/statuses/home_timeline.json")
 }
 
 func (t *Twitter) poleTweets(ctx context.Context, rawURL string) (<-chan []*domain.Tweet, <-chan error) {
