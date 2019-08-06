@@ -48,9 +48,11 @@ func (t *Twitter) poleTweets(ctx context.Context, rawURL string) (<-chan []*doma
 		}()
 
 		sendTweets := func(lastID string, tsCh chan<- []*domain.Tweet, errCh chan<- error) string {
-			params := t.defaultParams()
+			var params url.Values
 			if lastID != "" {
-				params.Set("since_id", lastID)
+				params = url.Values{
+					"since_id": []string{lastID},
+				}
 			}
 			ts, err := t.fetchTweets(rawURL, params)
 			if err != nil {
@@ -80,7 +82,7 @@ func (t *Twitter) poleTweets(ctx context.Context, rawURL string) (<-chan []*doma
 }
 
 func (t *Twitter) FetchHomeTweets() ([]*domain.Tweet, error) {
-	ts, err := t.fetchTweets("https://api.twitter.com/1.1/statuses/home_timeline.json", t.defaultParams())
+	ts, err := t.fetchTweets("https://api.twitter.com/1.1/statuses/home_timeline.json", nil)
 	if err != nil {
 		return nil, fmt.Errorf("failed to fetch home tweets: %s", err)
 	}
@@ -88,23 +90,21 @@ func (t *Twitter) FetchHomeTweets() ([]*domain.Tweet, error) {
 	return ts, nil
 }
 
-func (t *Twitter) defaultParams() url.Values {
-	return url.Values{
-		"tweet_mode": []string{"extended"},
-	}
-}
-
-func (t *Twitter) fetchTweets(url string, params url.Values) ([]*domain.Tweet, error) {
+func (t *Twitter) fetchTweets(destURL string, params url.Values) ([]*domain.Tweet, error) {
 	cred, err := t.treiveAuthorization()
 	if err != nil {
 		return nil, err
 	}
 
+	ps := t.defaultParams()
+	if params != nil {
+		copyValues(ps, params)
+	}
 	var tweets twitter.Tweets
 	if err := t.trieve(&oauthRequest{
 		cred:   cred,
 		method: http.MethodGet,
-		url:    url,
+		url:    destURL,
 		params: params,
 	}, &tweets); err != nil {
 		t.deleteConfig()
@@ -118,6 +118,12 @@ func (t *Twitter) fetchTweets(url string, params url.Values) ([]*domain.Tweet, e
 	}
 
 	return tweets.Adapt(), nil
+}
+
+func (t *Twitter) defaultParams() url.Values {
+	return url.Values{
+		"tweet_mode": []string{"extended"},
+	}
 }
 
 func (t *Twitter) deleteConfig() {

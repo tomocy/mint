@@ -40,6 +40,16 @@ func readJSON(src io.Reader, dest interface{}) error {
 	return json.NewDecoder(src).Decode(dest)
 }
 
+func copyValues(dest url.Values, srces ...url.Values) {
+	for _, src := range srces {
+		for k, ss := range src {
+			for _, s := range ss {
+				dest.Add(k, s)
+			}
+		}
+	}
+}
+
 type oauthRequest struct {
 	cred        *oauth.Credentials
 	method, url string
