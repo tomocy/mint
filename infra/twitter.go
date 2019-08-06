@@ -39,7 +39,11 @@ func (t *Twitter) FetchHomeTweets() ([]*domain.Tweet, error) {
 		return nil, fmt.Errorf("failed to fetch home tweets: %s", err)
 	}
 
-	resp, err := t.makeRequest(cred, http.MethodGet, "https://api.twitter.com/1.1/statuses/home_timeline.json", nil)
+	resp, err := t.makeRequest(&oauthRequest{
+		cred:   cred,
+		method: http.MethodGet,
+		url:    "https://api.twitter.com/1.1/statuses/home_timeline.json",
+	})
 	if err != nil {
 		t.deleteConfig()
 		return nil, fmt.Errorf("failed to fetch home tweets: %s", err)
@@ -123,14 +127,15 @@ func (t *Twitter) requestClientAuthorization(tempCred *oauth.Credentials) (*oaut
 	return token, err
 }
 
-func (t *Twitter) makeRequest(cred *oauth.Credentials, method, rawURL string, params url.Values) (*http.Response, error) {
+func (t *Twitter) makeRequest(req *oauthRequest) (*http.Response, error) {
+	params := req.params
 	if params == nil {
 		params = make(url.Values)
 	}
 
-	t.oauthClient.SignParam(cred, method, rawURL, params)
+	t.oauthClient.SignParam(req.cred, req.method, req.url, params)
 
-	resp, err := t.doRequest(method, rawURL, params)
+	resp, err := t.doRequest(req.method, req.url, params)
 	if err != nil {
 		return nil, err
 	}
