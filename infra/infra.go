@@ -3,8 +3,11 @@ package infra
 import (
 	"encoding/json"
 	"io"
+	"net/url"
 	"os"
 	"path/filepath"
+
+	"github.com/garyburd/go-oauth/oauth"
 )
 
 func createWorkspace() error {
@@ -35,4 +38,10 @@ func configFilename() string {
 
 func readJSON(src io.Reader, dest interface{}) error {
 	return json.NewDecoder(src).Decode(dest)
+}
+
+type oauthRequest struct {
+	cred        *oauth.Credentials
+	method, url string
+	params      url.Values
 }
