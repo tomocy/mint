@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"sort"
 	"strings"
+	"time"
 
 	"github.com/tomocy/mint/domain"
 )
@@ -16,7 +17,7 @@ func (ts asciiTweets) String() string {
 		if i == 0 {
 			b.WriteString("----------\n")
 		}
-		b.WriteString(fmt.Sprintf("%s@%s %s\n%s\n", t.User.Name, t.User.ScreenName, t.CreatedAt.Format("2006/01/02 15:04"), t.Text))
+		b.WriteString(fmt.Sprintf("%s@%s %s\n%s\n", t.User.Name, t.User.ScreenName, legibleTimeDiff(t.CreatedAt, "2006/01/02 15:04"), t.Text))
 		b.WriteString("----------\n")
 	}
 
@@ -31,4 +32,24 @@ func orderOlderTweets(ts []*domain.Tweet) []*domain.Tweet {
 	})
 
 	return ordered
+}
+
+func legibleTimeDiff(t time.Time, format string) string {
+	now := time.Now()
+	if now.Add(-7 * 24 * time.Hour).After(t) {
+		return t.Format(format)
+	}
+
+	diff := now.Sub(t)
+	if 24 <= diff.Hours() {
+		return fmt.Sprintf("%dd", int(diff.Hours()/24))
+	}
+	if 1 <= diff.Hours() {
+		return fmt.Sprintf("%dh", int(diff.Hours()))
+	}
+	if 1 <= diff.Minutes() {
+		return fmt.Sprintf("%dm", int(diff.Minutes()))
+	}
+
+	return fmt.Sprintf("%ds", int(diff.Seconds()))
 }
