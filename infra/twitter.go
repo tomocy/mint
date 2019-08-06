@@ -39,18 +39,13 @@ func (t *Twitter) FetchHomeTweets() ([]*domain.Tweet, error) {
 		return nil, fmt.Errorf("failed to fetch home tweets: %s", err)
 	}
 
-	resp, err := t.makeRequest(&oauthRequest{
+	var tweets twitter.Tweets
+	if err := t.treive(&oauthRequest{
 		cred:   cred,
 		method: http.MethodGet,
 		url:    "https://api.twitter.com/1.1/statuses/home_timeline.json",
-	})
-	if err != nil {
+	}, &tweets); err != nil {
 		t.deleteConfig()
-		return nil, fmt.Errorf("failed to fetch home tweets: %s", err)
-	}
-	defer resp.Body.Close()
-	var tweets twitter.Tweets
-	if err := readJSON(resp.Body, &tweets); err != nil {
 		return nil, fmt.Errorf("failed to fetch home tweets: %s", err)
 	}
 
