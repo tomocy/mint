@@ -42,12 +42,21 @@ func (a *app) setCommands() {
 		cli.Command{
 			Name:   "cli",
 			Action: a.runCLI,
+			Flags: []cli.Flag{
+				&cli.BoolFlag{
+					Name: "p",
+				},
+			},
 		},
 	}
 }
 
 func (a *app) runCLI(ctx *cli.Context) error {
 	client := new(client.CLI)
+	isPoll := ctx.Bool("p")
+	if isPoll {
+		return client.PoleHomeTweets()
+	}
 
 	return client.FetchHomeTweets()
 }
